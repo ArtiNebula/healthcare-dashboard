@@ -1,0 +1,68 @@
+
+warning: in the working copy of '.github/workflows/cd.yml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.github/workflows/ci.yml', LF will be replaced by CRLF the next time Git touches it
+[main a5c2049] fix: specify Dockerfile.frontend path in CI/CD
+ 2 files changed, 2 insertions(+)
+Enumerating objects: 11, done.
+Counting objects: 100% (11/11), done.
+Delta compression using up to 16 threads
+Compressing objects: 100% (5/5), done.
+Writing objects: 100% (6/6), 549 bytes | 109.00 KiB/s, done.
+Total 6 (delta 3), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (3/3), completed with 3 local objects.
+To https://github.com/ArtiNebula/healthcare-dashboard.git
+   25f3fd7..a5c2049  main -> main
+PS D:\M.tech\SEM IV\Healthcare Dashboard Development> cd "d:\M.tech\SEM IV\Healthcare Dashboard Development"
+>> git add .github/workflows/ci.yml .github/workflows/cd.yml
+>> git commit -m "fix: specify Dockerfile.frontend path in CI/CD"
+>> git push origin main
+>> 
+On branch main
+nothing to commit, working tree clean
+Everything up-to-date
+PS D:\M.tech\SEM IV\Healthcare Dashboard Development> cd "d:\M.tech\SEM IV\Healthcare Dashboard Development"
+>> git add .github/workflows/ci.yml
+>> git commit -m "fix: remove docker build from CI, CD handles image building"
+>> git push origin main
+>> 
+warning: in the working copy of '.github/workflows/ci.yml', LF will be replaced by CRLF the next time Git touches it
+[main ae5f1a5] fix: remove docker build from CI, CD handles image building
+ 1 file changed, 24 deletions(-)
+Enumerating objects: 9, done.
+Counting objects: 100% (9/9), done.
+Delta compression using up to 16 threads
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (5/5), 448 bytes | 64.00 KiB/s, done.
+Total 5 (delta 2), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To https://github.com/ArtiNebula/healthcare-dashboard.git
+   a5c2049..ae5f1a5  main -> main
+PS D:\M.tech\SEM IV\Healthcare Dashboard Development> cd "d:\M.tech\SEM IV\Healthcare Dashboard Development"
+>> git add .github/workflows/cd.yml
+>> git commit -m "fix: use plain docker commands instead of buildx in CD"
+>> git push origin main
+>> 
+warning: in the working copy of '.github/workflows/cd.yml', LF will be replaced by CRLF the next time Git touches it
+[main 918c576] fix: use plain docker commands instead of buildx in CD
+ 1 file changed, 12 insertions(+), 31 deletions(-)
+Enumerating objects: 9, done.
+Counting objects: 100% (9/9), done.
+Delta compression using up to 16 threads
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (5/5), 613 bytes | 122.00 KiB/s, done.
+Total 5 (delta 2), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To https://github.com/ArtiNebula/healthcare-dashboard.git
+   ae5f1a5..918c576  main -> main
+PS D:\M.tech\SEM IV\Healthcare Dashboard Development> cd "d:\M.tech\SEM IV\Healthcare Dashboard Development"
+>> git commit --allow-empty -m "retry: CD pipeline"
+>> git push origin main
+>> 
+[main 723c5ab] retry: CD pipeline
+Enumerating objects: 1, done.
+Counting objects: 100% (1/1), done.
+Writing objects: 100% (1/1), 205 bytes | 205.00 KiB/s, done.
+Total 1 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+To https://github.com/ArtiNebula/healthcare-dashboard.git
+   918c576..723c5ab  main -> main
+PS D:\M.tech\SEM IV\Healthcare Dashboard Development> 
