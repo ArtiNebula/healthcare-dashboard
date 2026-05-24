@@ -1,0 +1,105 @@
+version: "3.9"
+
+services:
+  # ── Prometheus ─────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: healthcare-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=15d"
+    networks:
+      - healthcare-net
+
+  # ── Grafana ────────────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:latest
+    container_name: healthcare-grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./monitoring/grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./monitoring/grafana/dashboards/provider.yaml:/etc/grafana/provisioning/dashboards/provider.yaml
+      - ./monitoring/grafana/dashboards/healthai.json:/etc/grafana/provisioning/dashboards/healthai.json
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - healthcare-net
+
+  # ── MySQL Database ─────────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: healthcare-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: healthcare_db
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./backend/database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - healthcare-net
+
+  # ── Node.js Backend ────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: healthcare-backend
+    restart: unless-stopped
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: healthcare_db
+      PORT: 5000
+    ports:
+      - "5000:5000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - healthcare-net
+
+  # ── React Frontend ─────────────────────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: healthcare-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - healthcare-net
+
+volumes:
+  mysql_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  healthcare-net:
+    driver: bridge

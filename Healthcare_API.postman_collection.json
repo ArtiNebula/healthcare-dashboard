@@ -1,0 +1,604 @@
+{
+  "info": {
+    "name": "Healthcare Dashboard API",
+    "description": "Complete API collection for AI-Powered Healthcare Dashboard",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "BASE_URL", "value": "http://localhost:5000/api", "type": "string" }
+  ],
+  "item": [
+
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Server Health",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/health",
+            "description": "Check if server is running"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Home",
+      "item": [
+        {
+          "name": "Get Home Data",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/home",
+            "description": "Get hero stats, live metrics, features, services"
+          }
+        },
+        {
+          "name": "Update Live Metrics",
+          "request": {
+            "method": "PATCH",
+            "url": "{{BASE_URL}}/home/live-metrics",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"heartRate\": 78,\n  \"symptomsLogged\": 4,\n  \"healthTrend\": \"Stable\",\n  \"aiSuggestions\": 3\n}"
+            },
+            "description": "Update live metrics on home page"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "User Login",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "description": "Login as patient user"
+          }
+        },
+        {
+          "name": "Admin Login",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/auth/admin-login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@hospital.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "description": "Login as admin"
+          }
+        },
+        {
+          "name": "Signup",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/auth/signup",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New User\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "description": "Register a new patient account"
+          }
+        },
+        {
+          "name": "Signup - Duplicate Email (Error Case)",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/auth/signup",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "description": "Should return 409 - Email already registered"
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/auth/forgot-password",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\"\n}"
+            },
+            "description": "Send password reset link"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get All Dashboard Data",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/dashboard",
+            "description": "Get stats, health trend, recent symptoms, AI suggestions, microservices"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Symptoms",
+      "item": [
+        {
+          "name": "Get Symptoms History",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/symptoms",
+            "description": "Get all logged symptoms history"
+          }
+        },
+        {
+          "name": "Log New Symptom",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/symptoms",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"symptom\": \"Headache\",\n  \"category\": \"Neurological\",\n  \"severity\": \"Moderate\",\n  \"temperature\": 98.6,\n  \"duration\": \"2 hrs\"\n}"
+            },
+            "description": "Log a new symptom entry"
+          }
+        },
+        {
+          "name": "Log Symptom - Missing Fields (Error Case)",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/symptoms",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"symptom\": \"\",\n  \"category\": \"\",\n  \"severity\": \"\"\n}"
+            },
+            "description": "Should return 400 - Missing required fields"
+          }
+        },
+        {
+          "name": "Get Health Score Trend",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/symptoms/health-trend",
+            "description": "Get health score trend over time"
+          }
+        },
+        {
+          "name": "Get Symptom Frequency",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/symptoms/frequency",
+            "description": "Get most frequent symptoms"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "AI Analysis",
+      "item": [
+        {
+          "name": "Get AI Analysis",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/ai/analysis",
+            "description": "Get AI conditions, recommendations, sparkline, doctor triggers"
+          }
+        },
+        {
+          "name": "Send AI Feedback - Thumbs Up",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/ai/feedback",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"conditionId\": 1,\n  \"feedback\": \"up\"\n}"
+            },
+            "description": "Positive feedback on AI condition"
+          }
+        },
+        {
+          "name": "Send AI Feedback - Thumbs Down",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/ai/feedback",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"conditionId\": 1,\n  \"feedback\": \"down\"\n}"
+            },
+            "description": "Negative feedback on AI condition"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "User Profile",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/profile",
+            "description": "Get user profile, wellness, vitals, emergency contacts, notifications"
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/profile",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe Updated\",\n  \"phone\": \"+1 (555) 999-8888\",\n  \"bloodType\": \"O+\",\n  \"height\": \"5'11\\\"\",\n  \"weight\": \"170 lbs\"\n}"
+            },
+            "description": "Update user profile fields"
+          }
+        },
+        {
+          "name": "Update Notification Preference",
+          "request": {
+            "method": "PUT",
+            "url": "{{BASE_URL}}/profile/notifications",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"weekly_reports\",\n  \"enabled\": true\n}"
+            },
+            "description": "Toggle notification preference on/off"
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/profile/change-password",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"password123\",\n  \"newPassword\": \"newpassword456\"\n}"
+            },
+            "description": "Change user password"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Admin - Users",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/users",
+            "description": "Get all patients list"
+          }
+        },
+        {
+          "name": "Filter by Risk - High",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/admin/users?risk=High",
+              "query": [{ "key": "risk", "value": "High" }]
+            },
+            "description": "Filter users by risk level"
+          }
+        },
+        {
+          "name": "Filter by Status - Active",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/admin/users?status=Active",
+              "query": [{ "key": "status", "value": "Active" }]
+            },
+            "description": "Filter users by status"
+          }
+        },
+        {
+          "name": "Search Users",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/admin/users?search=john",
+              "query": [{ "key": "search", "value": "john" }]
+            },
+            "description": "Search users by name or email"
+          }
+        },
+        {
+          "name": "Filter - Risk + Status Combined",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/admin/users?risk=Critical&status=Active",
+              "query": [
+                { "key": "risk", "value": "Critical" },
+                { "key": "status", "value": "Active" }
+              ]
+            },
+            "description": "Combined filter - Critical + Active"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Admin - Reports",
+      "item": [
+        {
+          "name": "Get All Reports",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/reports",
+            "description": "Get all report data in one call"
+          }
+        },
+        {
+          "name": "Weekly Symptoms",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/reports/weekly-symptoms",
+            "description": "Mild/Moderate/Severe by day"
+          }
+        },
+        {
+          "name": "AI Usage Data",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/reports/ai-usage",
+            "description": "AI queries and accuracy by week"
+          }
+        },
+        {
+          "name": "Severity Distribution",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/reports/severity",
+            "description": "Pie chart data - mild/moderate/severe"
+          }
+        },
+        {
+          "name": "User Retention",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/reports/retention",
+            "description": "D1/D7/D30 retention by month"
+          }
+        },
+        {
+          "name": "KPIs",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/reports/kpis",
+            "description": "Key performance indicators"
+          }
+        },
+        {
+          "name": "Insights",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/reports/insights",
+            "description": "AI-generated report insights"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Admin - Alerts",
+      "item": [
+        {
+          "name": "Get All Alerts",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/alerts",
+            "description": "Get all alert history"
+          }
+        },
+        {
+          "name": "Filter Alerts - Sent",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/admin/alerts?status=Sent",
+              "query": [{ "key": "status", "value": "Sent" }]
+            },
+            "description": "Get only sent alerts"
+          }
+        },
+        {
+          "name": "Filter Alerts - Pending",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/admin/alerts?status=Pending",
+              "query": [{ "key": "status", "value": "Pending" }]
+            },
+            "description": "Get only pending alerts"
+          }
+        },
+        {
+          "name": "Send Broadcast Alert",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/admin/alerts",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"System Maintenance\",\n  \"message\": \"Platform will be down for maintenance on Sunday 2 AM - 4 AM.\",\n  \"alertType\": \"broadcast\"\n}"
+            },
+            "description": "Send alert to all users"
+          }
+        },
+        {
+          "name": "Send Individual Alert",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/admin/alerts",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Health Checkup Reminder\",\n  \"message\": \"Please schedule your monthly health checkup.\",\n  \"alertType\": \"individual\",\n  \"selectedUsers\": [1, 2]\n}"
+            },
+            "description": "Send alert to specific users"
+          }
+        },
+        {
+          "name": "Send Alert - Missing Fields (Error Case)",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/admin/alerts",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"\",\n  \"message\": \"\"\n}"
+            },
+            "description": "Should return 400 - title and message required"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Admin - Severe Cases",
+      "item": [
+        {
+          "name": "Get All Severe Cases",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/severe-cases",
+            "description": "Get all severe cases with stats"
+          }
+        },
+        {
+          "name": "Get Single Case",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/severe-cases/1",
+            "description": "Get details of case ID 1"
+          }
+        },
+        {
+          "name": "Get Case - Not Found (Error Case)",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/severe-cases/999",
+            "description": "Should return 404 - Case not found"
+          }
+        },
+        {
+          "name": "Send Alert to Patient",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/admin/severe-cases/1/send-alert",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Please visit the emergency room immediately based on your symptoms.\"\n}"
+            },
+            "description": "Send emergency alert to severe case patient"
+          }
+        },
+        {
+          "name": "Send Alert - No Message (Error Case)",
+          "request": {
+            "method": "POST",
+            "url": "{{BASE_URL}}/admin/severe-cases/1/send-alert",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "description": "Should return 400 - message is required"
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Admin - Dashboard",
+      "item": [
+        {
+          "name": "Get All Dashboard Data",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/dashboard",
+            "description": "Get all admin dashboard data in one call"
+          }
+        },
+        {
+          "name": "Stats Only",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/dashboard/stats",
+            "description": "Total users, active today, AI queries, critical alerts"
+          }
+        },
+        {
+          "name": "User Growth",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/dashboard/user-growth",
+            "description": "Monthly user growth chart data"
+          }
+        },
+        {
+          "name": "AI Queries by Hour",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/dashboard/ai-queries",
+            "description": "AI query volume by hour of day"
+          }
+        },
+        {
+          "name": "Services Health",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/dashboard/services",
+            "description": "Microservices health status"
+          }
+        },
+        {
+          "name": "Recent Activity",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/dashboard/recent-activity",
+            "description": "Latest system activity log"
+          }
+        },
+        {
+          "name": "Symptom Frequency",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/admin/dashboard/symptom-frequency",
+            "description": "Most reported symptoms across all users"
+          }
+        }
+      ]
+    }
+
+  ]
+}

@@ -1,0 +1,74 @@
+# Frontend can only talk to backend
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: frontend-policy
+  namespace: healthcare
+spec:
+  podSelector:
+    matchLabels:
+      app: frontend
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - ports:
+        - port: 80
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: backend
+      ports:
+        - port: 5000
+
+---
+# Backend can only talk to MySQL and receive from frontend
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend-policy
+  namespace: healthcare
+spec:
+  podSelector:
+    matchLabels:
+      app: backend
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: frontend
+      ports:
+        - port: 5000
+    - from:
+        - podSelector:
+            matchLabels:
+              app: prometheus
+      ports:
+        - port: 5000
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: mysql
+      ports:
+        - port: 3306
+
+---
+# MySQL only accepts from backend
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mysql-policy
+  namespace: healthcare
+spec:
+  podSelector:
+    matchLabels:
+      app: mysql
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: backend
+      ports:
+        - port: 3306
