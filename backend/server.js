@@ -34,8 +34,53 @@ const aiAnalysisRequests = new client.Counter({
   registers: [register],
 });
 
+const loginAttemptsTotal = new client.Counter({
+  name: "login_attempts_total",
+  help: "Login attempts by type and result",
+  labelNames: ["type", "result"],
+  registers: [register],
+});
+
+const userSignupsTotal = new client.Counter({
+  name: "user_signups_total",
+  help: "Total user registrations",
+  registers: [register],
+});
+
+const activeRequestsGauge = new client.Gauge({
+  name: "active_http_requests",
+  help: "Current in-flight HTTP requests",
+  registers: [register],
+});
+
+const cacheHitsTotal = new client.Counter({
+  name: "cache_hits_total",
+  help: "Redis cache hits",
+  registers: [register],
+});
+
+const cacheMissesTotal = new client.Counter({
+  name: "cache_misses_total",
+  help: "Redis cache misses",
+  registers: [register],
+});
+
+const dbErrorsTotal = new client.Counter({
+  name: "db_errors_total",
+  help: "Total database errors across all routes",
+  registers: [register],
+});
+
 // Expose counters globally so routes can use them
-global.metricsCounters = { symptomsLogged, aiAnalysisRequests };
+global.metricsCounters = {
+  symptomsLogged,
+  aiAnalysisRequests,
+  loginAttempts: loginAttemptsTotal,
+  userSignups: userSignupsTotal,
+  cacheHits: cacheHitsTotal,
+  cacheMisses: cacheMissesTotal,
+  dbErrors: dbErrorsTotal,
+};
 
 const homeRoutes = require("./routes/home");
 const authRoutes = require("./routes/auth");
@@ -63,8 +108,10 @@ app.use(express.json());
 
 // HTTP metrics middleware
 app.use((req, res, next) => {
+  activeRequestsGauge.inc();
   const end = httpRequestDuration.startTimer({ method: req.method, route: req.path });
   res.on("finish", () => {
+    activeRequestsGauge.dec();
     httpRequestsTotal.inc({ method: req.method, route: req.path, status: res.statusCode });
     end();
   });
@@ -98,6 +145,10 @@ app.get("/api/metrics", async (_req, res) => {
   res.end(await register.metrics());
 });
 
-app.listen(PORT, () => {
-  console.log(`Healthcare API server running at http://localhost:${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Healthcare API server running at http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;

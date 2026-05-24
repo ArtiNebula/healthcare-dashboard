@@ -28,6 +28,7 @@ router.get("/count", async (req, res) => {
 
 // GET /api/ai/analysis — cached 60s (static AI data rarely changes)
 router.get("/analysis", async (_req, res) => {
+  global.metricsCounters?.aiAnalysisRequests?.inc();
   try {
     const cached = await getCache("ai:analysis");
     if (cached) return res.json({ success: true, data: cached, fromCache: true });

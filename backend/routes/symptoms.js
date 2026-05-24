@@ -116,8 +116,10 @@ router.post("/", async (req, res) => {
       "SELECT id, date, symptoms, severity, severity_score AS severityScore, status, ai_note AS aiNote, duration FROM symptoms_history WHERE id = ?",
       [result.insertId]
     );
+    global.metricsCounters?.symptomsLogged?.inc();
     res.status(201).json({ success: true, message: "Symptom logged successfully", data: rows[0] });
   } catch (err) {
+    global.metricsCounters?.dbErrors?.inc();
     res.status(500).json({ success: false, message: err.message });
   }
 });

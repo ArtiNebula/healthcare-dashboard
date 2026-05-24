@@ -13,7 +13,12 @@ client.on("error", () => {}); // suppress connection errors when Redis not prese
 async function getCache(key) {
   try {
     const val = await client.get(key);
-    return val ? JSON.parse(val) : null;
+    if (val) {
+      global.metricsCounters?.cacheHits?.inc();
+      return JSON.parse(val);
+    }
+    global.metricsCounters?.cacheMisses?.inc();
+    return null;
   } catch {
     return null;
   }

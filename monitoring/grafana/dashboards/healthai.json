@@ -204,6 +204,213 @@
         }
       },
       "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "id": 10,
+      "title": "Active In-Flight Requests",
+      "type": "gauge",
+      "gridPos": { "x": 12, "y": 20, "w": 6, "h": 4 },
+      "targets": [{
+        "expr": "active_http_requests",
+        "legendFormat": "Active"
+      }],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "min": 0, "max": 50,
+          "thresholds": { "steps": [
+            { "color": "green", "value": 0 },
+            { "color": "yellow", "value": 20 },
+            { "color": "red", "value": 40 }
+          ]}
+        }
+      },
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "id": 11,
+      "title": "User Signups",
+      "type": "stat",
+      "gridPos": { "x": 18, "y": 20, "w": 6, "h": 4 },
+      "targets": [{
+        "expr": "user_signups_total",
+        "legendFormat": "Signups"
+      }],
+      "options": { "colorMode": "background", "graphMode": "area" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "teal", "mode": "fixed" }
+        }
+      },
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "id": 12,
+      "title": "Login Attempts — Success vs Failure",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 24, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "rate(login_attempts_total{result=\"success\"}[5m]) * 60",
+          "legendFormat": "Success ({{type}})"
+        },
+        {
+          "expr": "rate(login_attempts_total{result=\"failure\"}[5m]) * 60",
+          "legendFormat": "Failure ({{type}})"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqpm",
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 2, "fillOpacity": 15 }
+        },
+        "overrides": [
+          { "matcher": { "id": "byRegexp", "options": "Failure.*" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }] }
+        ]
+      },
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "id": 13,
+      "title": "Cache Hit Rate (%)",
+      "type": "gauge",
+      "gridPos": { "x": 12, "y": 24, "w": 6, "h": 8 },
+      "targets": [{
+        "expr": "rate(cache_hits_total[5m]) / (rate(cache_hits_total[5m]) + rate(cache_misses_total[5m]) + 0.001) * 100",
+        "legendFormat": "Hit Rate"
+      }],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent", "min": 0, "max": 100,
+          "color": { "mode": "thresholds" },
+          "thresholds": { "steps": [
+            { "color": "red", "value": 0 },
+            { "color": "yellow", "value": 50 },
+            { "color": "green", "value": 80 }
+          ]}
+        }
+      },
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "id": 14,
+      "title": "Cache Hits vs Misses",
+      "type": "timeseries",
+      "gridPos": { "x": 18, "y": 24, "w": 6, "h": 8 },
+      "targets": [
+        {
+          "expr": "rate(cache_hits_total[1m]) * 60",
+          "legendFormat": "Hits/min"
+        },
+        {
+          "expr": "rate(cache_misses_total[1m]) * 60",
+          "legendFormat": "Misses/min"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqpm",
+          "custom": { "lineWidth": 2, "fillOpacity": 10 }
+        }
+      },
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "id": 15,
+      "title": "DB Errors",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 32, "w": 12, "h": 8 },
+      "targets": [{
+        "expr": "rate(db_errors_total[5m]) * 60",
+        "legendFormat": "DB Errors/min"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqpm",
+          "color": { "fixedColor": "dark-red", "mode": "fixed" },
+          "custom": { "lineWidth": 2, "fillOpacity": 20 },
+          "thresholds": { "steps": [
+            { "color": "green", "value": 0 },
+            { "color": "red", "value": 0.1 }
+          ]}
+        }
+      },
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "id": 16,
+      "title": "MySQL — Queries per Second",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 32, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "rate(mysql_global_status_questions[1m])",
+          "legendFormat": "Queries/sec"
+        },
+        {
+          "expr": "rate(mysql_global_status_slow_queries[1m])",
+          "legendFormat": "Slow Queries/sec"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 2, "fillOpacity": 10 }
+        }
+      },
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "id": 17,
+      "title": "MySQL — Open Connections",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 40, "w": 12, "h": 8 },
+      "targets": [{
+        "expr": "mysql_global_status_threads_connected",
+        "legendFormat": "Connected Threads"
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "fixedColor": "blue", "mode": "fixed" },
+          "custom": { "lineWidth": 2, "fillOpacity": 15 }
+        }
+      },
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
+    },
+    {
+      "id": 18,
+      "title": "4xx vs 5xx Error Breakdown",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 40, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "rate(http_requests_total{status=~\"4..\"}[5m]) * 60",
+          "legendFormat": "4xx Client Errors/min"
+        },
+        {
+          "expr": "rate(http_requests_total{status=~\"5..\"}[5m]) * 60",
+          "legendFormat": "5xx Server Errors/min"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqpm",
+          "custom": { "lineWidth": 2, "fillOpacity": 10 }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "5xx Server Errors/min" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "4xx Client Errors/min" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "orange", "mode": "fixed" } }] }
+        ]
+      },
+      "datasource": { "type": "prometheus", "uid": "prometheus" }
     }
   ],
   "schemaVersion": 38,

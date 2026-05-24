@@ -11,7 +11,10 @@ router.post("/login", async (req, res) => {
   try {
     const [rows] = await db.query("SELECT * FROM users WHERE LOWER(email) = LOWER(?)", [email]);
     const user = rows[0];
-    if (!user) return res.status(401).json({ success: false, message: "Invalid email or password" });
+    if (!user) {
+      global.metricsCounters?.loginAttempts?.inc({ type: "user", result: "failure" });
+      return res.status(401).json({ success: false, message: "Invalid email or password" });
+    }
 
     // Support both bcrypt hashes and legacy plain-text passwords
     const isHashed = user.password.startsWith("$2");
@@ -19,7 +22,10 @@ router.post("/login", async (req, res) => {
       ? await bcrypt.compare(password, user.password)
       : user.password === password;
 
-    if (!valid) return res.status(401).json({ success: false, message: "Invalid email or password" });
+    if (!valid) {
+      global.metricsCounters?.loginAttempts?.inc({ type: "user", result: "failure" });
+      return res.status(401).json({ success: false, message: "Invalid email or password" });
+    }
 
     // Upgrade plain-text password to bcrypt hash on successful login
     if (!isHashed) {
@@ -27,6 +33,7 @@ router.post("/login", async (req, res) => {
       await db.query("UPDATE users SET password = ? WHERE id = ?", [hash, user.id]);
     }
 
+    global.metricsCounters?.loginAttempts?.inc({ type: "user", result: "success" });
     res.json({
       success: true,
       message: "Login successful",
@@ -34,6 +41,7 @@ router.post("/login", async (req, res) => {
       redirectTo: user.role === "admin" ? "/admin" : "/user",
     });
   } catch (err) {
+    global.metricsCounters?.dbErrors?.inc();
     res.status(500).json({ success: false, message: err.message });
   }
 });
@@ -49,20 +57,27 @@ router.post("/admin-login", async (req, res) => {
       [email]
     );
     const user = rows[0];
-    if (!user) return res.status(401).json({ success: false, message: "Invalid admin credentials" });
+    if (!user) {
+      global.metricsCounters?.loginAttempts?.inc({ type: "admin", result: "failure" });
+      return res.status(401).json({ success: false, message: "Invalid admin credentials" });
+    }
 
     const isHashed = user.password.startsWith("$2");
     const valid = isHashed
       ? await bcrypt.compare(password, user.password)
       : user.password === password;
 
-    if (!valid) return res.status(401).json({ success: false, message: "Invalid admin credentials" });
+    if (!valid) {
+      global.metricsCounters?.loginAttempts?.inc({ type: "admin", result: "failure" });
+      return res.status(401).json({ success: false, message: "Invalid admin credentials" });
+    }
 
     if (!isHashed) {
       const hash = await bcrypt.hash(password, 10);
       await db.query("UPDATE users SET password = ? WHERE id = ?", [hash, user.id]);
     }
 
+    global.metricsCounters?.loginAttempts?.inc({ type: "admin", result: "success" });
     res.json({
       success: true,
       message: "Admin login successful",
@@ -70,6 +85,7 @@ router.post("/admin-login", async (req, res) => {
       redirectTo: "/admin",
     });
   } catch (err) {
+    global.metricsCounters?.dbErrors?.inc();
     res.status(500).json({ success: false, message: err.message });
   }
 });
@@ -87,8 +103,10 @@ router.post("/signup", async (req, res) => {
     await db.query("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, 'patient')", [
       name, email, hash,
     ]);
+    global.metricsCounters?.userSignups?.inc();
     res.status(201).json({ success: true, message: "Account created successfully", redirectTo: "/user" });
   } catch (err) {
+    global.metricsCounters?.dbErrors?.inc();
     res.status(500).json({ success: false, message: err.message });
   }
 });
