@@ -1,6 +1,4 @@
-const BASE_URL = window.location.port === "3000"
-  ? "http://localhost:5000/api"   // K8s port-forward
-  : "http://localhost:5000/api";  // local dev
+const BASE_URL = import.meta.env.VITE_API_URL || "/api";
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
