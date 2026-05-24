@@ -75,5 +75,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          file: ./Dockerfile.frontend
           push: false
           tags: healthcare-frontend:${{ github.sha }}
