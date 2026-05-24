@@ -6,6 +6,7 @@ on:
 
 env:
   DOCKERHUB_USERNAME: artisingh3106
+  DOCKER_HOST: npipe:////./pipe/docker_engine
 
 jobs:
   deploy:
@@ -14,9 +15,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set Docker context
-        run: docker context use desktop-linux
 
       - name: Log in to Docker Hub
         run: docker login -u ${{ env.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
