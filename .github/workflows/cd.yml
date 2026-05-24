@@ -18,15 +18,19 @@ jobs:
       - name: Log in to Docker Hub
         run: docker login -u ${{ env.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build & push backend
+      - name: Build backend image
+        run: docker build -t ${{ env.DOCKERHUB_USERNAME }}/healthcare-backend:latest -t ${{ env.DOCKERHUB_USERNAME }}/healthcare-backend:${{ github.sha }} ./backend
+
+      - name: Push backend image
         run: |
-          docker build -t ${{ env.DOCKERHUB_USERNAME }}/healthcare-backend:latest -t ${{ env.DOCKERHUB_USERNAME }}/healthcare-backend:${{ github.sha }} ./backend
           docker push ${{ env.DOCKERHUB_USERNAME }}/healthcare-backend:latest
           docker push ${{ env.DOCKERHUB_USERNAME }}/healthcare-backend:${{ github.sha }}
 
-      - name: Build & push frontend
+      - name: Build frontend image
+        run: docker build -f Dockerfile.frontend -t ${{ env.DOCKERHUB_USERNAME }}/healthcare-frontend:latest -t ${{ env.DOCKERHUB_USERNAME }}/healthcare-frontend:${{ github.sha }} .
+
+      - name: Push frontend image
         run: |
-          docker build -f Dockerfile.frontend -t ${{ env.DOCKERHUB_USERNAME }}/healthcare-frontend:latest -t ${{ env.DOCKERHUB_USERNAME }}/healthcare-frontend:${{ github.sha }} .
           docker push ${{ env.DOCKERHUB_USERNAME }}/healthcare-frontend:latest
           docker push ${{ env.DOCKERHUB_USERNAME }}/healthcare-frontend:${{ github.sha }}
 
