@@ -49,6 +49,13 @@ spec:
               mountPath: /var/lib/mysql
             - name: init-sql
               mountPath: /docker-entrypoint-initdb.d
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
           readinessProbe:
             exec:
               command: ["mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
