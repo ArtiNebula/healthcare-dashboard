@@ -6,7 +6,6 @@ on:
 
 env:
   DOCKERHUB_USERNAME: artisingh3106
-  DOCKER_HOST: npipe:////./pipe/docker_engine
 
 jobs:
   deploy:
